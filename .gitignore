@@ -22,3 +22,4 @@ databases/
 *.iml
 *.log
 *.tar.gz
+/libs/

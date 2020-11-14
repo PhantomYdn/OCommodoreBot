@@ -54,6 +54,11 @@
 			<artifactId>orienteer-core</artifactId>
 			<version>${orienteer.version}</version>
 		</dependency>
+		<dependency>
+		  <groupId>com.github.pengrad</groupId>
+		  <artifactId>java-telegram-bot-api</artifactId>
+		  <version>5.0.0</version>
+		</dependency>
         <!--<dependency>
             <groupId>org.orienteer</groupId>
             <artifactId>orienteer-architect</artifactId>
@@ -74,21 +79,21 @@
             <artifactId>orienteer-camel</artifactId>
             <version>${orienteer.version}</version>
         </dependency>-->
-        <!-- <dependency>
+        <dependency>
             <groupId>org.orienteer</groupId>
             <artifactId>orienteer-devutils</artifactId>
             <version>${orienteer.version}</version>
-        </dependency>-->
+        </dependency>
         <!-- <dependency>
             <groupId>org.orienteer</groupId>
             <artifactId>orienteer-etl</artifactId>
             <version>${orienteer.version}</version>
         </dependency>-->
-	<!-- <dependency>
+		<dependency>
             <groupId>org.orienteer</groupId>
             <artifactId>orienteer-graph</artifactId>
             <version>${orienteer.version}</version>
-        </dependency>-->
+        </dependency>
         <!-- <dependency>
             <groupId>org.orienteer</groupId>
             <artifactId>orienteer-logger-server</artifactId>
@@ -124,6 +129,12 @@
             <artifactId>orienteer-users</artifactId>
             <version>${orienteer.version}</version>
         </dependency>-->
+        <dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.16</version>
+			<scope>provided</scope>
+		</dependency>
 		<!-- ORIENTEER TESTS for TESTING -->
 		<dependency>
 			<groupId>org.orienteer</groupId>
