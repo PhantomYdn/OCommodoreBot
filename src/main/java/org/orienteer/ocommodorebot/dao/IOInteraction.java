@@ -20,6 +20,10 @@ public interface IOInteraction extends IODocumentWrapper {
 	public IOExecution getExecution();
 	public void setExecution(IOExecution execution);
 	
+	@DAOField(value = "stepExecution", inverse = "interactions")
+	public IOStepExecution getStepExecution();
+	public void setStepExecution(IOStepExecution stepExecution);
+	
 	public IOStep getStep();
 	public void setStep(IOStep step);
 	

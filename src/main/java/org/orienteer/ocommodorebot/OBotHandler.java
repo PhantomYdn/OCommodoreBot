@@ -8,6 +8,8 @@ import org.orienteer.core.dao.DAO;
 import org.orienteer.ocommodorebot.dao.IOExecution;
 import org.orienteer.ocommodorebot.dao.IOInteraction;
 import org.orienteer.ocommodorebot.dao.IOPlan;
+import org.orienteer.ocommodorebot.dao.IOStep;
+import org.orienteer.ocommodorebot.dao.IOStepExecution;
 import org.orienteer.ocommodorebot.dao.IOTelegramBot;
 import org.orienteer.ocommodorebot.dao.OBotDAO;
 
@@ -21,6 +23,8 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.GetUpdates;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.response.BaseResponse;
+import com.pengrad.telegrambot.response.SendResponse;
 
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
@@ -83,10 +87,16 @@ public class OBotHandler implements UpdatesListener {
 		Message newMessage = u.message();
 		if(newMessage!=null) {
 			send(newMessage, newMessage.text());
+			lookupExecution(newMessage.chat().id());
+			IOStepExecution stepExecution = lookupStepExecution(newMessage);
 			if(execution!=null) {
 				IOInteraction interaction = DAO.create(IOInteraction.class);
 				interaction.setExecution(execution);
 				interaction.setText(newMessage.text());
+				if(stepExecution!=null) {
+					interaction.setStepExecution(stepExecution);
+					interaction.setStep(stepExecution.getStep());
+				}
 				if(newMessage.date()!=null) interaction.setTimestamp(new Date((long)1000 * newMessage.date())); 
 				interaction.save();
 			}
@@ -99,6 +109,17 @@ public class OBotHandler implements UpdatesListener {
 		}
 	}
 	
+	protected void lookupExecution(Long chatId) {
+		if(execution==null) {
+			execution = botDAOProvider.get().getExecutionByChatId(chatId);
+		}
+	}
+	
+	protected IOStepExecution lookupStepExecution(Message m) {
+		Message replyToMessage = m.replyToMessage();
+		return replyToMessage!=null?botDAOProvider.get().getStepExecution(m.chat().id(), replyToMessage.messageId()):null;
+	}
+	
 	protected void startPlan(Message newMessage, String botCommand, String[] args) {
 		if(execution!=null) send(newMessage, "There is already plan in progress. Please finish it first"); 
 		else if(args.length<2) send(newMessage, "Please define plan name");
@@ -109,11 +130,27 @@ public class OBotHandler implements UpdatesListener {
 				send(newMessage, "Starting plan "+args[1]);
 				execution = DAO.create(IOExecution.class);
 				execution.setPlan(plan);
+				execution.setChatId(newMessage.chat().id());
 				execution.save();
+				startStep(newMessage.chat().id(), plan.getStartStep());
 			} else {
 				send(newMessage, "Plan "+planName+" was not found");
 			}
 		}
+	}
+	
+	protected void startStep(Long chatId, IOStep step) {
+		String text = String.format("@%s, please start %s. You have %d minutes", 
+											step.getResponsibleTelegram(),
+											step.getTitle(),
+											step.getDuration());
+		SendResponse response = send(chatId, text);
+		IOStepExecution stepExecution = DAO.create(IOStepExecution.class);
+		stepExecution.setExecution(execution);
+		stepExecution.setStarted(new Date());
+		stepExecution.setStep(step);
+		stepExecution.setMessageId(response.message().messageId());
+		stepExecution.save();
 	}
 	
 	protected void stopPlan(Message newMessage, String botCommand, String[] args) {
@@ -126,10 +163,10 @@ public class OBotHandler implements UpdatesListener {
 		}
 	}
 	
-	private void send(Message originalMessage, String text) {
-		send(originalMessage.chat().id(), text);
+	private SendResponse send(Message originalMessage, String text) {
+		return send(originalMessage.chat().id(), text);
 	}
-	private void send(Object chatId, String text) {
-		telegramBot.execute(new SendMessage(chatId, text));
+	private SendResponse send(Long chatId, String text) {
+		return telegramBot.execute(new SendMessage(chatId, text));
 	}
 }

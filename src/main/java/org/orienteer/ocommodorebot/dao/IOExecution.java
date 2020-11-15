@@ -19,6 +19,10 @@ public interface IOExecution extends IODocumentWrapper {
 	public IOPlan getPlan();
 	public void setPlan(IOPlan plan);
 	
+	@DAOField("chatId")
+	public Long getChatId();
+	public void setChatId(Long chatId);
+	
 	@DAOField(value = "started", defaultValue = "sysdate()")
 	public Date getStarted();
 	public IOExecution setStarted(Date date);
@@ -27,8 +31,11 @@ public interface IOExecution extends IODocumentWrapper {
 	public Date getFinished();
 	public IOExecution setFinished(Date date);
 	
-	@DAOField(value = "interactions", inverse = "execution", visualization = UIVisualizersRegistry.VISUALIZER_TABLE)
+	@DAOField(inverse = "execution", visualization = UIVisualizersRegistry.VISUALIZER_TABLE)
 	public List<IOInteraction> getInteractions();
+	
+	@DAOField(inverse = "execution", visualization = UIVisualizersRegistry.VISUALIZER_TABLE)
+	public List<IOStepExecution> getStepExecutions();
 	
 	public default void markFinished() {
 		setFinished(new Date());

@@ -18,4 +18,10 @@ public interface OBotDAO {
 	
 	@Query("select from OPlan where name = :name")
 	public IOPlan getPlanByName(String name);
+	
+	@Query("select from OExecution where chatId = :chatId")
+	public IOExecution getExecutionByChatId(Long chatId);
+	
+	@Query("select from OStepExecution where execution.chatId = :chatId and messageId = :messageId")
+	public IOStepExecution getStepExecution(Long chatId, Integer messageId);
 }

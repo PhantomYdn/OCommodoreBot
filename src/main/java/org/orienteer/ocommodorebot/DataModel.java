@@ -9,8 +9,10 @@ import org.orienteer.core.dao.DAO;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.ocommodorebot.dao.IOExecution;
+import org.orienteer.ocommodorebot.dao.IOInteraction;
 import org.orienteer.ocommodorebot.dao.IOPlan;
 import org.orienteer.ocommodorebot.dao.IOStep;
+import org.orienteer.ocommodorebot.dao.IOStepExecution;
 import org.orienteer.ocommodorebot.dao.IOTelegramBot;
 import org.orienteer.ocommodorebot.dao.OBotDAO;
 
@@ -30,7 +32,7 @@ public class DataModel extends AbstractOrienteerModule{
 	private static List<OBotHandler> botThreads = new ArrayList<OBotHandler>();
 
 	protected DataModel() {
-		super("ocommodorebot", 3);
+		super("ocommodorebot", 5);
 	}
 	
 	@Override
@@ -40,7 +42,9 @@ public class DataModel extends AbstractOrienteerModule{
 		DAO.describe(helper, IOTelegramBot.class,
 							 IOStep.class,
 							 IOPlan.class,
-							 IOExecution.class);
+							 IOExecution.class,
+							 IOStepExecution.class,
+							 IOInteraction.class);
 		helper.oClass("OUser")
 				.oProperty("telegram", OType.STRING, 30);
 		return null;
