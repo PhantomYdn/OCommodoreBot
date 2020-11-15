@@ -30,7 +30,7 @@ public class DataModel extends AbstractOrienteerModule{
 	private static List<OBotHandler> botThreads = new ArrayList<OBotHandler>();
 
 	protected DataModel() {
-		super("ocommodorebot", 2);
+		super("ocommodorebot", 3);
 	}
 	
 	@Override

@@ -2,6 +2,6 @@ package org.orienteer.ocommodorebot;
 
 import org.orienteer.ocommodorebot.dao.IOTelegramBot;
 
-public interface IBotHanlerFactory {
+public interface IBotHandlerFactory {
 	OBotHandler create(IOTelegramBot bot);
 }
