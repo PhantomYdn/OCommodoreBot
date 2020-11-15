@@ -7,6 +7,7 @@ import org.orienteer.core.dao.DAOField;
 import org.orienteer.core.dao.DAOOClass;
 import org.orienteer.core.dao.IODocumentWrapper;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
+import org.orienteer.core.dao.Query;
 
 import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -28,6 +29,9 @@ public interface IOStep extends IODocumentWrapper {
 	
 	@DAOField(inverse = "step", visualization = UIVisualizersRegistry.VISUALIZER_TABLE)
 	public List<IOStepExecution> getStepExecutions();
+	
+	@Query("select from (select expand(out()) from :target)")
+	public List<IOStep> nextSteps();
 	
 	public default String getResponsibleTelegram() {
 		ODocument user = getResponsible();

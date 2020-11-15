@@ -40,4 +40,9 @@ public interface IOStepExecution extends IODocumentWrapper {
 	
 	@DAOField(value = "interactions", inverse = "stepExecution", visualization = UIVisualizersRegistry.VISUALIZER_TABLE)
 	public List<IOInteraction> getInteractions();
+	
+	public default void markAsDone(Date timestamp, ODocument user) {
+		setFinished(timestamp);
+		setExecutor(user);
+	}
 }

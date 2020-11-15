@@ -2,6 +2,7 @@ package org.orienteer.ocommodorebot;
 
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.wicket.ThreadContext;
 import org.orienteer.core.dao.DAO;
@@ -41,6 +42,8 @@ public class OBotHandler implements UpdatesListener {
 	private Provider<OBotDAO> botDAOProvider;
 	
 	private IOExecution execution;
+	
+	private static final Pattern PATTERN_DONE = Pattern.compile("\\bdone\\b", Pattern.CASE_INSENSITIVE);
 	
 	@AssistedInject
 	public OBotHandler(@Assisted IOTelegramBot bot) {
@@ -85,7 +88,7 @@ public class OBotHandler implements UpdatesListener {
 	
 	protected synchronized void processUpdate(Update u) throws Exception {
 		Message newMessage = u.message();
-		if(newMessage!=null) {
+		if(newMessage!=null && newMessage.text()!=null) {
 			send(newMessage, newMessage.text());
 			lookupExecution(newMessage.chat().id());
 			IOStepExecution stepExecution = lookupStepExecution(newMessage);
@@ -99,6 +102,10 @@ public class OBotHandler implements UpdatesListener {
 				}
 				if(newMessage.date()!=null) interaction.setTimestamp(new Date((long)1000 * newMessage.date())); 
 				interaction.save();
+				
+				if(stepExecution!=null && PATTERN_DONE.matcher(newMessage.text()).find()) {
+					doneStep(newMessage, stepExecution);
+				}
 			}
 		}
 		String botCommand = newMessage.getBotCommand();
@@ -111,7 +118,7 @@ public class OBotHandler implements UpdatesListener {
 	
 	protected void lookupExecution(Long chatId) {
 		if(execution==null) {
-			execution = botDAOProvider.get().getExecutionByChatId(chatId);
+			execution = botDAOProvider.get().getActiveExecutionByChatId(chatId);
 		}
 	}
 	
@@ -151,6 +158,15 @@ public class OBotHandler implements UpdatesListener {
 		stepExecution.setStep(step);
 		stepExecution.setMessageId(response.message().messageId());
 		stepExecution.save();
+	}
+	
+	protected void doneStep(Message newMessage, IOStepExecution execution) {
+		execution.markAsDone(new Date((long)1000*newMessage.date()),
+						botDAOProvider.get().getUserByTelegram(newMessage.from().username()));
+		List<IOStep> nextSteps = execution.getStep().nextSteps();
+		for (IOStep ioStep : nextSteps) {
+			startStep(newMessage.chat().id(), ioStep);
+		}
 	}
 	
 	protected void stopPlan(Message newMessage, String botCommand, String[] args) {
