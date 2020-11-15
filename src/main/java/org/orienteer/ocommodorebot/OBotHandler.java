@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.wicket.ThreadContext;
 import org.orienteer.ocommodorebot.dao.IOTelegramBot;
 
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Message;
@@ -23,7 +25,8 @@ public class OBotHandler implements UpdatesListener {
 	private IOTelegramBot bot;
 	private TelegramBot telegramBot;
 	
-	public OBotHandler(IOTelegramBot bot) {
+	@AssistedInject
+	public OBotHandler(@Assisted IOTelegramBot bot) {
 		this.bot = bot;
 		this.telegramBot = new TelegramBot(bot.getToken());
 	}
@@ -62,16 +65,28 @@ public class OBotHandler implements UpdatesListener {
 		return UpdatesListener.CONFIRMED_UPDATES_ALL;
 	}
 	
-	private void processUpdate(Update u) throws Exception {
+	protected synchronized void processUpdate(Update u) throws Exception {
 		Message newMessage = u.message();
 		if(newMessage!=null) {
 			telegramBot.execute(new SendMessage(newMessage.chat().id(), newMessage.text()));
 		}
 		String botCommand = newMessage.getBotCommand();
-		if(botCommand!=null && botCommand.startsWith("/start")) {
+		if(botCommand!=null) {
 			String[] args = newMessage.text().split("\\s");
-			if(args.length<2) telegramBot.execute(new SendMessage(newMessage.chat().id(), "Please define plan name"));
-			else telegramBot.execute(new SendMessage(newMessage.chat().id(), "Starting plan "+args[1]));
+			if(botCommand.startsWith("/start"))  startPlan(newMessage, botCommand, args);
+			else if(botCommand.startsWith("/stop"))  stopPlan(newMessage, botCommand, args);
 		}
+	}
+	
+	protected void startPlan(Message newMessage, String botCommand, String[] args) {
+		if(args.length<2) telegramBot.execute(new SendMessage(newMessage.chat().id(), "Please define plan name"));
+		else {
+			String planName = args[1];
+			telegramBot.execute(new SendMessage(newMessage.chat().id(), "Starting plan "+args[1]));
+		}
+	}
+	
+	protected void stopPlan(Message newMessage, String botCommand, String[] args) {
+		
 	}
 }

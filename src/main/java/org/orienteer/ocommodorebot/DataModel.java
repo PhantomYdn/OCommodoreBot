@@ -24,6 +24,9 @@ public class DataModel extends AbstractOrienteerModule{
 	@Inject
 	private OBotDAO botDAO;
 	
+	@Inject
+	private IBotHandlerFactory botHandlerFactory;
+	
 	private static List<OBotHandler> botThreads = new ArrayList<OBotHandler>();
 
 	protected DataModel() {
@@ -53,7 +56,7 @@ public class DataModel extends AbstractOrienteerModule{
 		List<IOTelegramBot> botConfigs = botDAO.findEnabledBots();
 		
 		for (IOTelegramBot ioTelegramBot : botConfigs) {
-			OBotHandler thread = new OBotHandler(ioTelegramBot);
+			OBotHandler thread = botHandlerFactory.create(ioTelegramBot);
 			thread.startBot();
 			botThreads.add(thread);
 		}

@@ -44,6 +44,7 @@
 		<orienteer.version>2.0-SNAPSHOT</orienteer.version>
 		<wicket.orientdb.version>2.0-SNAPSHOT</wicket.orientdb.version>
 		<jetty.version>9.4.12.v20180830</jetty.version>
+		<guice.version>4.2.0</guice.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
 		<wtp.version>none</wtp.version>
@@ -63,6 +64,11 @@
             <groupId>org.orienteer</groupId>
             <artifactId>orienteer-architect</artifactId>
             <version>${orienteer.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-assistedinject</artifactId>
+            <version>${guice.version}</version>
         </dependency>
         <!--<dependency>
             <groupId>org.orienteer</groupId>
