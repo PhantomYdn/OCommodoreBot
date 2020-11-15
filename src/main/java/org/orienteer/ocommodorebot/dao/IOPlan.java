@@ -8,15 +8,15 @@ import org.orienteer.core.dao.ODocumentWrapperProvider;
 import com.google.inject.ProvidedBy;
 
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass("OTelegramBot")
-public interface IOTelegramBot extends IODocumentWrapper {
+@DAOOClass(value = "OPlan", nameProperty = "name")
+public interface IOPlan extends IODocumentWrapper{
 
 	@DAOField("name")
 	public String getName();
 	
-	@DAOField("token")
-	public String getToken();
+	@DAOField(value = "startStep", visualization = "listbox")
+	public IOStep getStartStep();
 	
-	@DAOField(value = "enabled", defaultValue = "true")
-	public boolean isEnabled();
+	@DAOField("planVersion")
+	public Integer getPlanVersion();
 }

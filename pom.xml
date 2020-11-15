@@ -59,11 +59,11 @@
 		  <artifactId>java-telegram-bot-api</artifactId>
 		  <version>5.0.0</version>
 		</dependency>
-        <!--<dependency>
+        <dependency>
             <groupId>org.orienteer</groupId>
             <artifactId>orienteer-architect</artifactId>
             <version>${orienteer.version}</version>
-        </dependency>-->
+        </dependency>
         <!--<dependency>
             <groupId>org.orienteer</groupId>
             <artifactId>orienteer-birt</artifactId>

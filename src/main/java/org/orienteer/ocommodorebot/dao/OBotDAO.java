@@ -15,4 +15,7 @@ public interface OBotDAO {
 	
 	@Query("select from OTelegramBot where enabled = true")
 	public List<IOTelegramBot> findEnabledBots();
+	
+	@Query("select from OPlan where name = :name")
+	public IOPlan getPlanByName(String name);
 }
